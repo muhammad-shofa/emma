@@ -34,7 +34,6 @@
                                 <th style="width: 10px">No</th>
                                 <th>Employee Code</th>
                                 <th>Username</th>
-                                <th>Role</th>
                                 <th>Try Login</th>
                                 <th>Status Login</th>
                                 <th>Action</th>

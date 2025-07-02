@@ -15,7 +15,23 @@ class AttendanceController extends Controller
     // get all attendance data
     public function getAttendances()
     {
-        $attendance = AttendanceModel::with('employee')->orderBy('created_at', 'DESC')->get();
+        $rawattendance = AttendanceModel::with('employee')->orderBy('created_at', 'DESC')->get();
+
+        $attendance = $rawattendance->map(function ($item) {
+            return [
+                'id' => $item->id,
+                'employee_id' => $item->employee_id,
+                'date' => Carbon::parse($item->date)->format('d-m-Y'),
+                'clock_in' => $item->clock_in,
+                'clock_out' => $item->clock_out,
+                'clock_in_status' => $item->clock_in_status,
+                'clock_out_status' => $item->clock_out_status,
+                'work_duration' => $item->work_duration,
+                'created_at' => $item->created_at,
+                'updated_at' => $item->updated_at,
+            ];
+        });
+
         return response()->json([
             'success' => true,
             'message' => 'Data retrieved successfully',

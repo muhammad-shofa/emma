@@ -31,7 +31,6 @@ $(document).ready(function () {
                         data ? data.employee_code : "EMP Not Found",
                 },
                 { data: "username" },
-                { data: "role" },
                 { data: "try_login" },
                 { data: "status_login" },
                 {
@@ -41,11 +40,11 @@ $(document).ready(function () {
                             <button class="btn-edit btn btn-primary" data-user_id="${row.id}" data-bs-toggle="modal" data-bs-target="#editModal">
                                 <i class="fa-solid fa-pen"></i>
                             </button>
-                            <button class="btn-delete btn btn-danger" data-user_id="${row.id}" data-bs-toggle="modal" data-bs-target="#deleteModal">
-                                <i class="fa-solid fa-trash"></i>
-                            </button>
                             <button class="btn-reset-password btn btn-warning text-white" data-user_id="${row.id}" data-bs-toggle="modal" data-bs-target="#resetpasswordModal">
                                 <i class="fa-solid fa-key"></i>
+                            </button>
+                            <button class="btn-delete btn btn-danger" data-user_id="${row.id}" data-bs-toggle="modal" data-bs-target="#deleteModal">
+                                <i class="fa-solid fa-trash"></i>
                             </button>
                         `;
                     },
@@ -319,6 +318,8 @@ $(document).ready(function () {
                         confirmButtonText: "Oke",
                     });
                     loadUsersData();
+                    $('#new_password').val('');
+                    $('#confirm_password').val('');
                 } else {
                     console.log(response.message);
                 }
