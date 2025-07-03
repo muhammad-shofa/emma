@@ -18,14 +18,45 @@ class SalariesController extends Controller
     // get all salaries data
     public function getSalaries()
     {
-        $salaries = SalariesModel::with(['employee.position', 'salarySetting'])->get();
+        $rawSalaries = SalariesModel::with(['employee.position', 'salarySetting'])->get();
+
+        $salaries = $rawSalaries->map(function ($item) {
+            return [
+                'id' => $item->id,
+                'employee_id' => $item->employee_id,
+                'salary_setting_id' => $item->salary_setting_id,
+                'year' => $item->year,
+                'month' => $item->month,
+                'hour_deduction' => $item->hour_deduction,
+                'absent_deduction' => $item->absent_deduction,
+                'deduction' => $item->deduction,
+                'bonus' => $item->bonus,
+                'total_salary' => $item->total_salary,
+                'payment_date' => Carbon::parse($item->payment_date)->format('d-m-Y'),
+                'created_at' => $item->created_at,
+                'updated_at' => $item->updated_at,
+                'employee' => $item->employee,
+                'salary_setting' => $item->salarySetting,
+            ];
+        });
 
         return response()->json([
             'success' => true,
             'message' => 'Salaries retrieved successfully',
             'data' => $salaries,
-        ], 200);
+        ]);
     }
+
+    // public function getSalaries()
+    // {
+    //     $salaries = SalariesModel::with(['employee.position', 'salarySetting'])->get();
+
+    //     return response()->json([
+    //         'success' => true,
+    //         'message' => 'Salaries retrieved successfully',
+    //         'data' => $salaries,
+    //     ], 200);
+    // }
 
     public function getSalaryByEmployeeId($employee_id)
     {

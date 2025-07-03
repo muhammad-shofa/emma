@@ -14,14 +14,40 @@ class TimeOffController extends Controller
     // get all time off requests
     public function getTimeOffRequests()
     {
-        $timeOffRequestsData = TimeOffModel::with('employee')->get();
+        $timeOffRequestsRaw = TimeOffModel::with('employee')->get();
+
+        $timeOffRequests = $timeOffRequestsRaw->map(function ($item) {
+            return [
+                'id' => $item->id,
+                'employee_id' => $item->employee_id,
+                'request_date' => Carbon::parse($item->request_date)->format('d-m-Y'),
+                'start_date' => Carbon::parse($item->start_date)->format('d-m-Y'),
+                'end_date' => Carbon::parse($item->end_date)->format('d-m-Y'),
+                'reason' => $item->reason,
+                'status' => $item->status,
+                'created_at' => $item->created_at,
+                'updated_at' => $item->updated_at,
+                'employee' => $item->employee
+            ];
+        });
 
         return response()->json([
             'success' => true,
             'message' => 'Time off requests retrieved successfully',
-            'data' => $timeOffRequestsData
+            'data' => $timeOffRequests
         ]);
     }
+
+    // public function getTimeOffRequests()
+    // {
+    //     $timeOffRequestsData = TimeOffModel::with('employee')->get();
+
+    //     return response()->json([
+    //         'success' => true,
+    //         'message' => 'Time off requests retrieved successfully',
+    //         'data' => $timeOffRequestsData
+    //     ]);
+    // }
 
     public function getTimeOffRequestById($time_off_id)
     {
