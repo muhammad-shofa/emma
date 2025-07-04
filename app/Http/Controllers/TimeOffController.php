@@ -6,6 +6,7 @@ use App\Models\EmployeeModel;
 use App\Models\TimeOffModel;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
 
 class TimeOffController extends Controller
@@ -76,20 +77,20 @@ class TimeOffController extends Controller
     public function newTimeOff(Request $request)
     {
         // Validasi input
-        // $validator = Validator::make($request->all(), [
-        //     'employee_id' => 'required|exists:employees,id',
-        //     'start_date'  => 'required|date',
-        //     'end_date'    => 'required|date|after_or_equal:start_date',
-        //     'reason'      => 'required|string|max:255',
-        // ]);
+        $validator = Validator::make($request->all(), [
+            'employee_id' => 'required|exists:employees,id',
+            'start_date' => 'required|date|after_or_equal:today',
+            'end_date' => 'required|date|after_or_equal:start_date',
+            'reason' => 'required|string|max:255',
+        ]);
 
-        // if ($validator->fails()) {
-        //     return response()->json([
-        //         'success' => false,
-        //         'message' => 'Validation failed.',
-        //         'errors'  => $validator->errors()
-        //     ], 422);
-        // }
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'errors' => $validator->errors(),
+            ], 422);
+        }
+
 
         // Ambil data employee
         $employee = EmployeeModel::findOrFail($request->employee_id);
