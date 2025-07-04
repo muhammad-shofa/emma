@@ -117,6 +117,19 @@ $(document).ready(function () {
         let username = $("#username").val();
         let password = $("#password").val();
         let role = $("#role").val();
+
+        // Validasi password
+        let passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
+        if (!passwordRegex.test(password)) {
+            Swal.fire({
+                title: "Invalid Password",
+                text: "Password must be at least 8 characters, containing uppercase, lowercase letters, numbers, and symbols.",
+                icon: "warning",
+                confirmButtonText: "Oke",
+            });
+            return;
+        }
+
         $.ajax({
             url: "/api/user/add-user",
             type: "POST",
@@ -148,14 +161,18 @@ $(document).ready(function () {
                 }
             },
             error: function (xhr, status, error) {
+                let errorMessage = "Failed to add new data.";
+                if (xhr.status === 422 && xhr.responseJSON && xhr.responseJSON.errors) {
+                    errorMessage = Object.values(xhr.responseJSON.errors).join(" ");
+                }
                 Swal.fire({
                     title: "Failed!",
-                    text: "Failed to add new data.",
+                    text: errorMessage,
                     icon: "error",
                     confirmButtonText: "Oke",
                 });
-                console.error("AJAX Error: " + status + error);
-            },
+                console.error("AJAX Error: ", xhr.responseJSON);
+            }
         });
     });
 

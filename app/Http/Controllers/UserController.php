@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\EmployeeModel;
 use App\Models\UserModel;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class UserController extends Controller
 {
@@ -34,9 +35,26 @@ class UserController extends Controller
     // add new user
     public function addUser(Request $request)
     {
-        // Tambahkan validasi nanti
-        // Tambahkan validasi nanti
-        // Tambahkan validasi nanti
+        $validator = Validator::make($request->all(), [
+            'employee_id' => 'required|exists:employees,id',
+            'username' => 'required|string|unique:users,username',
+            'password' => [
+                'required',
+                'string',
+                'min:8',
+                'regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).+$/',
+            ],
+            'role' => 'required|string',
+        ], [
+            'password.regex' => 'Passwords must consist of uppercase letters, lowercase letters, numbers, and symbols.',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'errors' => $validator->errors(),
+            ], 422);
+        }
 
         $employee_id = $request->input('employee_id');
 
