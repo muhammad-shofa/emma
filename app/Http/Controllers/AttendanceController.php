@@ -56,12 +56,28 @@ class AttendanceController extends Controller
     {
         $attendance = AttendanceModel::where('employee_id', $employee_id)->orderBy('created_at', 'DESC')->get();
 
+        // Format tanggal 'date' menjadi d-m-Y
+        $attendance->transform(function ($item) {
+            $item->date = Carbon::parse($item->date)->format('d-m-Y');
+            return $item;
+        });
+
         return response()->json([
             'success' => true,
             'message' => 'Attendance data retrieved successfully',
             'data' => $attendance
         ]);
     }
+    // public function getEmployeeAttendance($employee_id)
+    // {
+    //     $attendance = AttendanceModel::where('employee_id', $employee_id)->orderBy('created_at', 'DESC')->get();
+
+    //     return response()->json([
+    //         'success' => true,
+    //         'message' => 'Attendance data retrieved successfully',
+    //         'data' => $attendance
+    //     ]);
+    // }
 
     // update attendace
     public function updateAttendance(Request $request, $attendance_id)

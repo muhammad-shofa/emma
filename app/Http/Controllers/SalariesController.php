@@ -47,22 +47,16 @@ class SalariesController extends Controller
         ]);
     }
 
-    // public function getSalaries()
-    // {
-    //     $salaries = SalariesModel::with(['employee.position', 'salarySetting'])->get();
-
-    //     return response()->json([
-    //         'success' => true,
-    //         'message' => 'Salaries retrieved successfully',
-    //         'data' => $salaries,
-    //     ], 200);
-    // }
 
     public function getSalaryByEmployeeId($employee_id)
     {
         $salaries = SalariesModel::with(['employee.position', 'salarySetting'])
             ->where('employee_id', $employee_id)
-            ->get();
+            ->get()
+            ->map(function ($salary) {
+                $salary->payment_date = Carbon::parse($salary->payment_date)->format('d-m-Y');
+                return $salary;
+            });
 
         return response()->json([
             'success' => true,
@@ -86,7 +80,13 @@ class SalariesController extends Controller
             }
 
             // Total work_duration dalam menit
+            // Tentukan awal dan akhir bulan ini
+            $startOfMonth = Carbon::now()->startOfMonth()->toDateString();
+            $endOfMonth = Carbon::now()->endOfMonth()->toDateString();
+
+            // Total work_duration dalam menit untuk bulan ini
             $completedMinutes = AttendanceModel::where('employee_id', $employee_id)
+                ->whereBetween('date', [$startOfMonth, $endOfMonth])
                 ->sum('work_duration');
 
             // Ubah ke jam

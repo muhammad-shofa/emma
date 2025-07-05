@@ -64,14 +64,60 @@ class TimeOffController extends Controller
     // get history time off request by employee_id
     public function getTimeOffRequestByEmployeeId($employee_id)
     {
-        $timeOffRequestsData = TimeOffModel::with('employee')->where('employee_id', $employee_id)->orderBy('created_at', 'DESC')->get();
+        $timeOffRequestsRaw = TimeOffModel::with('employee')
+            ->where('employee_id', $employee_id)
+            ->orderBy('created_at', 'DESC')
+            ->get();
+
+        // Ubah format tanggal menjadi d-m-Y
+        $timeOffRequests = $timeOffRequestsRaw->map(function ($request) {
+            return [
+                'id' => $request->id,
+                'employee_id' => $request->employee_id,
+                'request_date' => Carbon::parse($request->request_date)->format('d-m-Y'),
+                'start_date' => Carbon::parse($request->start_date)->format('d-m-Y'),
+                'end_date' => Carbon::parse($request->end_date)->format('d-m-Y'),
+                'reason' => $request->reason,
+                'status' => $request->status,
+                'created_at' => $request->created_at,
+                'updated_at' => $request->updated_at,
+                'employee' => [
+                    'id' => $request->employee->id,
+                    'position_id' => $request->employee->position_id,
+                    'employee_code' => $request->employee->employee_code,
+                    'full_name' => $request->employee->full_name,
+                    'email' => $request->employee->email,
+                    'phone' => $request->employee->phone,
+                    'gender' => $request->employee->gender,
+                    'join_date' => Carbon::parse($request->employee->join_date)->format('d-m-Y'),
+                    'status' => $request->employee->status,
+                    'has_account' => $request->employee->has_account,
+                    'time_off_quota' => $request->employee->time_off_quota,
+                    'time_off_used' => $request->employee->time_off_used,
+                    'time_off_remaining' => $request->employee->time_off_remaining,
+                    'created_at' => $request->employee->created_at,
+                    'updated_at' => $request->employee->updated_at,
+                ]
+            ];
+        });
 
         return response()->json([
             'success' => true,
             'message' => 'Time off requests retrieved successfully',
-            'data' => $timeOffRequestsData
+            'data' => $timeOffRequests
         ]);
     }
+
+    // public function getTimeOffRequestByEmployeeId($employee_id)
+    // {
+    //     $timeOffRequestsData = TimeOffModel::with('employee')->where('employee_id', $employee_id)->orderBy('created_at', 'DESC')->get();
+
+    //     return response()->json([
+    //         'success' => true,
+    //         'message' => 'Time off requests retrieved successfully',
+    //         'data' => $timeOffRequestsData
+    //     ]);
+    // }
 
     // add new time off request
     public function newTimeOff(Request $request)
