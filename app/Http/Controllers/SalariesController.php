@@ -58,7 +58,7 @@ class SalariesController extends Controller
                 return $salary;
             });
 
-        return response()->json([
+        return response()->json([ 
             'success' => true,
             'message' => 'Salaries retrieved successfully',
             'data' => $salaries,

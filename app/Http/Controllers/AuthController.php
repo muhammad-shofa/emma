@@ -27,6 +27,7 @@ class AuthController extends Controller
                 $user->update([
                     'try_login' => 5,
                     'status_login' => 'active',
+                    'is_login' => 0,
                     'cooldown_until' => null
                 ]);
             }
@@ -40,11 +41,20 @@ class AuthController extends Controller
                 ], 200);
             }
 
+            // 🔒 Cek apakah akun sedang login di tempat lain
+            if ($user->is_login == 1) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'This account is already active in another session.'
+                ], 200);
+            }
+            
             // Jika password benar
             if (password_verify($request->password, $user->password)) {
                 $user->update([
                     'try_login' => 5,
                     'status_login' => 'active',
+                    'is_login' => 1,
                     'cooldown_until' => null
                 ]);
                 Auth::login($user);
@@ -77,52 +87,25 @@ class AuthController extends Controller
 
         return response()->json(['success' => false, 'message' => 'Incorrect username or password'], 200);
 
-
-
-
-        // OLD OLD OLD OLD OLD
-        // if ($user && password_verify($request->password, $user->password)) {
-
-        //     // save user data to session
-        //     // session(['user' => $user]);
-        //     Auth::login($user);
-        //     // Authentication passed
-        //     return response()->json(['success' => true, 'message' => 'Login successful'], 200);
-        // } else {
-        //     $tmpUsername = UserModel::where('username', $request->username)->first();
-        //     $tryLogin = $tmpUsername->try_login;
-        //     $decreaseTryLogin = $tryLogin - 1;
-        //     $status_login = "active";
-        //     $textChangeLeft = $decreaseTryLogin . " change left";
-        //     $wait = "";
-
-        //     // $decreaseTryLogin <= 0 ? $status_login = "nonactive" : $status_login = "active";
-
-        //     if ($decreaseTryLogin <= 0) {
-        //         $status_login = "nonactive";
-        //         $wait = "5 Minutes";
-        //     }
-
-        //     $tmpUsername->update([
-        //         'try_login' => $decreaseTryLogin,
-        //         'status_login' => $status_login
-        //     ]);
-
-        //     return response()->json(['success' => false, 'message' => 'Incorrect username or password, ' . $textChangeLeft . " " . $wait], 200);
-        // }
-
-        // return response()->json(['success' => false, 'message' => 'Invalid credentials'], 401);
     }
 
     public function logoutAuth()
     {
-        // Logout the user
-        Auth::logout();
+        if (Auth::check()) {
+            // Ambil user yang sedang login
+            $user = userModel::find(Auth::id());
 
-        // Clear the session
-        session()->flush();
+            // Ubah is_login jadi 0
+            if ($user) {
+                $user->is_login = 0;
+                $user->save();
+            }
 
-        // Redirect to the login page
+            // Logout user dan hapus session
+            Auth::logout();
+            session()->flush();
+        }
+
         return redirect('/')->with('message', 'Logout successful');
     }
 }

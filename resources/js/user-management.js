@@ -283,75 +283,97 @@ $(document).ready(function () {
     });
 
     // ketika tombol konfirmasi reset password diklik
-    $(document).on("click", ".save-new-password", function () {
-        let user_id = $("#reset_user_id").val();
-        let new_password = $("#new_password").val();
-        let confirm_password = $("#confirm_password").val();
-        if (new_password.length < 6) {
-            Swal.fire({
-                title: "Error!",
-                text: "Password must be at least 6 characters long.",
-                icon: "error",
-                confirmButtonText: "Oke",
-            });
-            return;
-        }
-        if (!new_password) {
-            Swal.fire({
-                title: "Error!",
-                text: "Password cannot be empty.",
-                icon: "error",
-                confirmButtonText: "Oke",
-            });
-            return;
-        }
-        if (new_password !== confirm_password) {
-            Swal.fire({
-                title: "Error!",
-                text: "Passwords do not match.",
-                icon: "error",
-                confirmButtonText: "Oke",
-            });
-            return;
-        }
+$(document).on("click", ".save-new-password", function () {
+    let user_id = $("#reset_user_id").val();
+    let new_password = $("#new_password").val().replace(/\s+/g, ""); // hapus semua spasi
+    let confirm_password = $("#confirm_password").val().replace(/\s+/g, ""); // hapus semua spasi
 
-        $.ajax({
-            url: "/api/user/reset-password/" + user_id,
-            type: "PUT",
-            dataType: "json",
-            data: {
-                password: confirm_password,
-            },
-            headers: {
-                "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content"),
-            },
-            success: (response) => {
-                if (response.success) {
-                    $("#resetPasswordModal").modal("hide");
-                    Swal.fire({
-                        title: "Success!",
-                        text: "Password has been reset successfully.",
-                        icon: "success",
-                        confirmButtonText: "Oke",
-                    });
-                    loadUsersData();
-                    $('#new_password').val('');
-                    $('#confirm_password').val('');
-                } else {
-                    console.log(response.message);
-                }
-            },
-            error: function (xhr, status, error) {
-                Swal.fire({
-                    title: "Error!",
-                    text: "Failed to reset password.",
-                    icon: "error",
-                    confirmButtonText: "Oke",
-                });
-                console.error("AJAX Error: " + status + error);
-            },
+    // update input field untuk memastikan user juga lihat hasilnya
+    $("#new_password").val(new_password);
+    $("#confirm_password").val(confirm_password);
+
+    // Regex untuk validasi kompleksitas password
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_])[^\s]{6,}$/;
+
+    if (!new_password) {
+        Swal.fire({
+            title: "Error!",
+            text: "Password cannot be empty.",
+            icon: "error",
+            confirmButtonText: "Okay",
         });
+        return;
+    }
+
+    if (new_password.length < 6) {
+        Swal.fire({
+            title: "Error!",
+            text: "Password must be at least 6 characters long.",
+            icon: "error",
+            confirmButtonText: "Okay",
+        });
+        return;
+    }
+
+    if (!passwordRegex.test(new_password)) {
+        Swal.fire({
+            title: "Error!",
+            html: "Password must be at least 6 characters long and include uppercase and lowercase letters, a number, a special character, and no spaces.",
+            icon: "error",
+            confirmButtonText: "Okay",
+        });
+
+        return;
+    }
+
+    if (new_password !== confirm_password) {
+        Swal.fire({
+            title: "Error!",
+            text: "Passwords do not match.",
+            icon: "error",
+            confirmButtonText: "Okay",
+        });
+        return;
+    }
+
+    $.ajax({
+        url: "/api/user/reset-password/" + user_id,
+        type: "PUT",
+        dataType: "json",
+        data: {
+            password: confirm_password,
+        },
+        headers: {
+            "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content"),
+        },
+        success: (response) => {
+            if (response.success) {
+                $("#resetPasswordModal").modal("hide");
+                Swal.fire({
+                    title: "Success!",
+                    text: "Password has been reset successfully.",
+                    icon: "success",
+                    confirmButtonText: "Okay",
+                });
+                loadUsersData();
+                $('#new_password').val('');
+                $('#confirm_password').val('');
+            } else {
+                console.log(response.message);
+            }
+        },
+        error: function (xhr, status, error) {
+            Swal.fire({
+                title: "Error!",
+                text: "Failed to reset password.",
+                icon: "error",
+                confirmButtonText: "Okay",
+            });
+            console.error("AJAX Error: " + status + error);
+        },
     });
+});
+
 
     // ketika tombol hapus diklik
     $(document).on("click", ".btn-delete", function () {

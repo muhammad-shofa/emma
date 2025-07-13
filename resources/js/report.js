@@ -57,14 +57,13 @@ $(document).ready(function () {
                                     <strong>${
                                         item.employee.full_name
                                     }</strong><br>
-                                    Clock In: ${item.clock_in || "-"}<br>
-                                    Clock Out: ${item.clock_out || "-"}<br>
-                                    Clock In Status: <span class="badge ${clockInBadge}">${
+                                    Clock In: ${item.clock_in || "-"} <span class="badge ${clockInBadge}">${
                                 item.clock_in_status
                             }</span><br>
-                                    Clock Out Status: <span class="badge ${clockOutBadge}">${
+                                    Clock Out: ${item.clock_out || "-"} <span class="badge ${clockOutBadge}">${
                                 item.clock_out_status
-                            }</span>
+                            }</span><br>
+                
                                 </li>
                             `;
                         });

@@ -18,6 +18,7 @@ Route::get('/unauthorized', [PagesController::class, 'unauthorized']);
 
 // Pages endpoint
 Route::get('/', [PagesController::class, 'login']);
+// Route::get('/', [AuthController::class, 'login'])->middleware('guest')->name('login');
 Route::get('/dashboard', [PagesController::class, 'dashboard']);
 Route::get('/user-management', [PagesController::class, 'userManagement'])->middleware('role:admin');
 Route::get('/employee-management', [PagesController::class, 'employeeManagement'])->middleware('role:admin');

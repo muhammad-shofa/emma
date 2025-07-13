@@ -19,7 +19,8 @@
         <div class="container-fluid">
             <div class="card mb-4">
                 <div class="card-header">
-                    <div class="d-flex align-items-center">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <h3 class="card-title">Salary Settings Table</h3>
                         <button
                             type="button"
                             class="btn btn-success mx-3"
@@ -28,7 +29,6 @@
                         >
                             Add Salary Setting
                         </button>
-                        <h3 class="card-title">Salary Settings Table</h3>
                     </div>
                 </div>
                 <!-- /.card-header -->
