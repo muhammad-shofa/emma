@@ -16,6 +16,11 @@ use Illuminate\Support\Facades\Route;
 // Unauthorized endpoint
 Route::get('/unauthorized', [PagesController::class, 'unauthorized']);
 
+// session expired
+Route::get('/session-expired', function () {
+    return view('pages.errors.session-expired');
+});
+
 // Pages endpoint
 Route::get('/', [PagesController::class, 'login']);
 // Route::get('/', [AuthController::class, 'login'])->middleware('guest')->name('login');

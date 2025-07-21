@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\AutoLogoutMiddleware;
 use App\Http\Middleware\CheckSessionLogout;
 use App\Http\Middleware\RoleMiddleware;
 use Illuminate\Foundation\Application;
@@ -18,9 +19,8 @@ return Application::configure(basePath: dirname(__DIR__))
             'role' => RoleMiddleware::class,
         ]);
 
-        // Untuk middleware global
         $middleware->append([
-            CheckSessionLogout::class,
+            AutoLogoutMiddleware::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

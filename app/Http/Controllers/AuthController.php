@@ -8,8 +8,6 @@ use Illuminate\Support\Facades\Auth;
 
 class AuthController extends Controller
 {
-
-
     public function loginAuth(Request $request)
     {
         // Validate the request
@@ -41,14 +39,14 @@ class AuthController extends Controller
                 ], 200);
             }
 
-            // 🔒 Cek apakah akun sedang login di tempat lain
+            // Cek apakah akun sedang login di tempat lain
             if ($user->is_login == 1) {
                 return response()->json([
                     'success' => false,
                     'message' => 'This account is already active in another session.'
                 ], 200);
             }
-            
+
             // Jika password benar
             if (password_verify($request->password, $user->password)) {
                 $user->update([
@@ -57,7 +55,16 @@ class AuthController extends Controller
                     'is_login' => 1,
                     'cooldown_until' => null
                 ]);
+
                 Auth::login($user);
+                session()->put('user_id', $user->id);
+
+                // session([
+                //     'user_id' => $user->id,
+                // ]);
+
+                // Simpan juga ke cookie selama waktu
+                cookie()->queue(cookie('user_id_temp', $user->id, 120));
 
                 return response()->json(['success' => true, 'message' => 'Login success'], 200);
             } else {
@@ -86,7 +93,6 @@ class AuthController extends Controller
         }
 
         return response()->json(['success' => false, 'message' => 'Incorrect username or password'], 200);
-
     }
 
     public function logoutAuth()
