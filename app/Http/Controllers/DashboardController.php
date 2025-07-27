@@ -24,7 +24,17 @@ class DashboardController extends Controller
         $employee_counts = EmployeeModel::count();
         $late_counts = AttendanceModel::where('clock_in_status', 'late')->whereBetween('created_at', [$startDate, $endDate])->count();
         $time_off_counts = TimeOffModel::where('status', 'pending')->count();
-        $attendance_latest_three = AttendanceModel::with('employee')->whereBetween('created_at', [$startDate, $endDate])->latest()->take(3)->get();
+        // $attendance_latest_three = AttendanceModel::with('employee')->whereBetween('created_at', [$startDate, $endDate])->latest()->take(3)->get();
+        $attendance_latest_three = AttendanceModel::with('employee')
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->latest()
+            ->take(3)
+            ->get()
+            ->map(function ($attendance) {
+                $attendance->date = Carbon::parse($attendance->date)->format('d-m-Y');
+                return $attendance;
+            });
+
 
         return response()->json([
             'success' => true,
@@ -62,7 +72,11 @@ class DashboardController extends Controller
             ->whereBetween('created_at', [$startDate, $endDate])
             ->latest()
             ->take(3)
-            ->get();
+            ->get()
+            ->map(function ($attendance) {
+                $attendance->date = Carbon::parse($attendance->date)->format('d-m-Y');
+                return $attendance;
+            });
 
         return response()->json([
             'success' => true,

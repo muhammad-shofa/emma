@@ -21,6 +21,7 @@ class AttendanceController extends Controller
             return [
                 'id' => $item->id,
                 'employee_id' => $item->employee_id,
+                'employee' => $item->employee,
                 'date' => Carbon::parse($item->date)->format('d-m-Y'),
                 'clock_in' => $item->clock_in,
                 'clock_out' => $item->clock_out,

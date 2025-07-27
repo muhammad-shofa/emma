@@ -11,10 +11,14 @@ $(document).ready(function () {
 
             $("#triggerOffcanvasAttendance").click();
 
-            // Set judul sementara dan loading
+            // Ubah ke format d-m-Y
+            let parts = dateClicked.split("-");
+            let formattedDate = `${parts[2]}-${parts[1]}-${parts[0]}`;
+
             $("#offcanvasAttendanceLabel").text(
-                `Attendance Date ${dateClicked}`
+                `Attendance Date ${formattedDate}`
             );
+            
             $("#attendanceDetailContent").html(
                 `<p>Loading attendances data...</p>`
             );
@@ -57,10 +61,14 @@ $(document).ready(function () {
                                     <strong>${
                                         item.employee.full_name
                                     }</strong><br>
-                                    Clock In: ${item.clock_in || "-"} <span class="badge ${clockInBadge}">${
+                                    Clock In: ${
+                                        item.clock_in || "-"
+                                    } <span class="badge ${clockInBadge}">${
                                 item.clock_in_status
                             }</span><br>
-                                    Clock Out: ${item.clock_out || "-"} <span class="badge ${clockOutBadge}">${
+                                    Clock Out: ${
+                                        item.clock_out || "-"
+                                    } <span class="badge ${clockOutBadge}">${
                                 item.clock_out_status
                             }</span><br>
                 
